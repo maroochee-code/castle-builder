@@ -2,82 +2,103 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>Castle Builder - Architecture Supervisor</title>
+  <title>Castle Builder - Retro 2D Architecture Supervisor</title>
   <style>
-    body { margin: 0; background: #0f172a; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; height: 100vh; overflow: hidden; }
-    #canvas-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-    #hud { width: 340px; background: #1e293b; border-left: 1px solid #334155; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
-    .card { background: #0f172a; border-radius: 8px; padding: 16px; border: 1px solid #334155; }
-    .gauge-bar { height: 12px; background: #334155; border-radius: 6px; overflow: hidden; margin-top: 8px; }
-    .gauge-fill { height: 100%; width: 85%; background: #10b981; transition: width 0.3s, background 0.3s; }
-    .castle-svg { width: 90%; max-width: 650px; height: auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
-    .block { cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
-    .block:hover { transform: translateY(-3px); filter: brightness(1.2); }
-  </style>
-</head>
-<body>
-  <div id="canvas-container">
-    <svg class="castle-svg" viewBox="0 0 600 500">
-      <!-- Ground Line -->
-      <line x1="50" y1="360" x2="550" y2="360" stroke="#475569" stroke-width="4" stroke-dasharray="6,6"/>
-      <text x="50" y="380" fill="#64748b" font-size="12">지상 경계선 (Ground Level)</text>
-
-      <!-- 1. Underground Core -->
-      <g id="block-underground" class="block" onclick="showBlockInfo('underground')">
-        <rect x="150" y="370" width="300" height="90" fill="#1e293b" stroke="#38bdf8" stroke-width="2" rx="4"/>
-        <text x="300" y="420" fill="#38bdf8" text-anchor="middle" font-size="14" font-weight="bold">지하 암반: Core & DB</text>
-      </g>
-
-      <!-- 2. Castle Walls -->
-      <g id="block-walls" class="block" onclick="showBlockInfo('walls')">
-        <rect x="120" y="240" width="360" height="120" fill="#334155" stroke="#94a3b8" stroke-width="2" rx="4"/>
-        <text x="300" y="305" fill="#f8fafc" text-anchor="middle" font-size="14" font-weight="bold">성벽 & 성문: Auth & API Gateway</text>
-      </g>
-
-      <!-- 3. Keep Main Hall -->
-      <g id="block-keep" class="block" onclick="showBlockInfo('keep')">
-        <rect x="200" y="140" width="200" height="100" fill="#475569" stroke="#cbd5e1" stroke-width="2" rx="4"/>
-        <text x="300" y="195" fill="#f8fafc" text-anchor="middle" font-size="14" font-weight="bold">본관: Business Logic</text>
-      </g>
-
-      <!-- 4. Watchtowers -->
-      <g id="block-tower-left" class="block" onclick="showBlockInfo('tower-left')">
-        <polygon points="120,240 160,110 200,240" fill="#64748b" stroke="#cbd5e1" stroke-width="2"/>
-        <text x="160" y="210" fill="#f8fafc" text-anchor="middle" font-size="11">서쪽 망루 (UI)</text>
-      </g>
-      <g id="block-tower-right" class="block" onclick="showBlockInfo('tower-right')">
-        <polygon points="400,240 440,110 480,240" fill="#64748b" stroke="#cbd5e1" stroke-width="2"/>
-        <text x="440" y="210" fill="#f8fafc" text-anchor="middle" font-size="11">동쪽 망루 (Admin)</text>
-      </g>
-    </svg>
-  </div>
-
-  <div id="hud">
-    <h2>🏰 구조 감리 상태 (HUD)</h2>
-    <div class="card">
-      <div>전체 구조 안정도</div>
-      <div class="gauge-bar"><div id="integrity-bar" class="gauge-fill"></div></div>
-      <div id="integrity-text" style="margin-top:6px; font-weight:bold; color:#10b981;">85% (안정적 요새)</div>
-    </div>
-    <div class="card">
-      <div style="font-weight:bold; margin-bottom:8px;">블록 상세 정보 (Inspector)</div>
-      <div id="inspector-content" style="color:#94a3b8; font-size:13px; line-height:1.5;">
-        블록을 클릭하면 상태와 모듈 진단 결과가 표시됩니다.
-      </div>
-    </div>
-  </div>
-
-  <script>
-    function showBlockInfo(layer) {
-      const inspector = document.getElementById('inspector-content');
-      const details = {
-        'underground': '<strong>지하 암반 (Core & DB)</strong><br>상태: 견고함<br>내용: 스키마 및 인프라가 하중을 정상 지탱 중.',
-        'walls': '<strong>성벽 및 관문 (Auth & API)</strong><br>상태: 방어 작동 중<br>내용: 외부 요청 필터링 및 인증 미들웨어 배치 완료.',
-        'keep': '<strong>본관 내성 (Business Logic)</strong><br>상태: 정상 가동 중<br>내용: 도메인 로직 및 비즈니스 처리 엔진.',
-        'tower-left': '<strong>서쪽 망루 (Client UI)</strong><br>상태: 점검 권장<br>내용: 기초 연동 상태 양호.'
-      };
-      inspector.innerHTML = details[layer] || '선택된 모듈 정보가 없습니다.';
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #141721;
+      color: #e2e8f0;
+      font-family: monospace, -apple-system, sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      image-rendering: pixelated;
     }
-  </script>
-</body>
-</html>
+    #canvas-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 20px;
+    }
+    #hud {
+      width: 380px;
+      background: #1a1e2d;
+      border-left: 2px solid #2d3348;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+    .pixel-box {
+      background: #141721;
+      border: 2px solid #2d3348;
+      padding: 16px;
+      position: relative;
+    }
+    .pixel-box.alert {
+      border-color: #e06c75;
+      background: #1f1a24;
+    }
+    .castle-svg {
+      width: 100%;
+      max-width: 620px;
+      height: auto;
+      filter: drop-shadow(0 10px 0 rgba(0,0,0,0.4));
+    }
+    .layer-group {
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .layer-group:hover {
+      opacity: 0.9;
+    }
+    .pixel-line {
+      shape-rendering: crispEdges;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 11px;
+      font-weight: bold;
+      background: #2d3348;
+      color: #98c379;
+    }
+    .badge.danger {
+      background: #4c2229;
+      color: #e06c75;
+    }
+    .badge.warning {
+      background: #4a3e20;
+      color: #e5c07b;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      background: #212638;
+      border: 2px solid #2d3348;
+      color: #abb2bf;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      text-align: left;
+    }
+    .btn:hover {
+      background: #2d3348;
+      color: #fff;
+    }
+    .btn.primary {
+      border-color: #61afef;
+      color: #61afef;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    .alert-blink {
+      animation:
